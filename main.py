@@ -14,6 +14,7 @@ from chp2.functions import plot_decision_regions
 
 from chp2.perceptron import Perceptron
 from chp2.Adaline import Adaline
+from chp2.AdalineSGD import AdalineSGD
 
 try:
     s = "https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data"
@@ -68,6 +69,7 @@ ax[1].set_xlabel('Epochs')
 ax[1].set_ylabel('Mean squared error')
 ax[1].set_title('Adaline - Learning rate 0.0001')
 """
+"""
 X_std = np.copy(X)
 X_std[:, 0] = (X[:, 0] - X[:, 0].mean()) / X[:, 0].std()
 X_std[:, 1] = (X[:, 1] - X[:, 1].mean()) / X[:, 1].std()
@@ -89,6 +91,26 @@ plt.xlabel('Epochs')
 plt.ylabel('Mean squared error')
 
 plt.tight_layout()
+"""
+
+ada_sgd = AdalineSGD(n_iter=15, eta=0.01, random_state=1)
+ada_sgd.fit(X_std, y)
+
+plot_decision_regions(X_std, y, classifier=ada_sgd)
+plt.title('Adaline - Stochastic gradient descent')
+plt.xlabel('Sepal length [standardized]')
+plt.ylabel('Petal length [standardized]')
+plt.legend(loc='upper left')
+
+plt.tight_layout()
+plt.savefig('figures/02_15_1.png', dpi=300)
+plt.show()
+
+plt.plot(range(1, len(ada_sgd.losses_) + 1), ada_sgd.losses_, marker='o')
+plt.xlabel('Epochs')
+plt.ylabel('Average loss')
+
+plt.savefig('figures/02_15_2.png', dpi=300)
 
 #plt.savefig('images/02_08.png', dpi=300)
 plt.show()
