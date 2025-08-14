@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from chp2.functions import plot_decision_regions
 
 from chp2.perceptron import Perceptron
-from chp2.Adaline import Adaline
+from chp2.AdalineGD import AdalineGD
 from chp2.AdalineSGD import AdalineSGD
 
 try:
@@ -69,11 +69,11 @@ ax[1].set_xlabel('Epochs')
 ax[1].set_ylabel('Mean squared error')
 ax[1].set_title('Adaline - Learning rate 0.0001')
 """
-"""
+
 X_std = np.copy(X)
 X_std[:, 0] = (X[:, 0] - X[:, 0].mean()) / X[:, 0].std()
 X_std[:, 1] = (X[:, 1] - X[:, 1].mean()) / X[:, 1].std()
-
+"""
 ada_gd = Adaline(n_iter=20, eta=0.5)
 ada_gd.fit(X_std, y)
 
@@ -103,14 +103,14 @@ plt.ylabel('Petal length [standardized]')
 plt.legend(loc='upper left')
 
 plt.tight_layout()
-plt.savefig('figures/02_15_1.png', dpi=300)
+#plt.savefig('figures/02_15_1.png', dpi=300)
 plt.show()
 
 plt.plot(range(1, len(ada_sgd.losses_) + 1), ada_sgd.losses_, marker='o')
 plt.xlabel('Epochs')
 plt.ylabel('Average loss')
 
-plt.savefig('figures/02_15_2.png', dpi=300)
+#plt.savefig('figures/02_15_2.png', dpi=300)
 
 #plt.savefig('images/02_08.png', dpi=300)
 plt.show()
