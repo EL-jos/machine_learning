@@ -26,12 +26,12 @@ def plot_decision_regions(X, y, classifier, test_idx=None, resolution=0.02):
 
     # plot class examples
     for idx, cl in enumerate(np.unique(y)):
-        plt.scatter(x=X[y == cl, 0], 
+        plt.scatter(x=X[y == cl, 0],
                     y=X[y == cl, 1],
-                    alpha=0.8, 
+                    alpha=0.8,
                     c=colors[idx],
-                    marker=markers[idx], 
-                    label=f'Class {cl}', 
+                    marker=markers[idx],
+                    label=f'Class {cl}',
                     edgecolor='black')
 
     # highlight test examples
@@ -46,5 +46,5 @@ def plot_decision_regions(X, y, classifier, test_idx=None, resolution=0.02):
                     alpha=1.0,
                     linewidth=1,
                     marker='o',
-                    s=100, 
-                    label='Test set')   
+                    s=100,
+                    label='Test set')
