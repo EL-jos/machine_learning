@@ -13,15 +13,15 @@ class LogisticRegressionGD:
         for _ in range(self.n_iter):
             net_input = self.net_input(X)
             output = self.activation(net_input)
-            error = y - output
-            self.w_ += self.eta * X.T.dot(error) / X.shape[0]
-            self.b_ += self.eta * error.mean()
-            loss = ( -y.dot(np.log(output)) - (1-y).dot(np.log(1-output)) ) / X.shape[0]
+            errors = (y - output)
+            self.w_ += (self.eta * X.T.dot(errors)) / X.shape[0]
+            self.b_ += self.eta * errors.mean()
+            loss = ( -y.dot( np.log(output) ) - (1 - y).dot( np.log(1 - output) ) ) / X.shape[0]
             self.losses_.append(loss)
         return self
     def net_input(self, X):
         return np.dot(X, self.w_) + self.b_
     def activation(self, z):
-        return 1 / 1 * np.exp(z)
+        return 1. / (1. + np.exp( - np.clip(z, -250, 250) ))
     def predict(self, X):
         return np.where(self.activation(self.net_input(X)) >= 0.5, 1, 0)

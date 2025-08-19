@@ -10,14 +10,13 @@ class AdalineGD:
         self.w_ = rgen.normal(loc=0.0, scale=0.01, size=X.shape[1])
         self.b_ = np.float64(0.)
         self.losses_ = []
-
         for _ in range(self.n_iter):
             net_input = self.net_input(X)
             output = self.activation(net_input)
-            errors = y - output
-            self.w_ += self.eta * 2 * X.T.dot(errors) / X.shape[0]
-            self.b_ += self.eta * 2 * errors.mean()
-            loss = np.mean(errors**2)
+            error = ( y - output )
+            self.w_ += (self.eta * 2.0 * X.T.dot(error)) / X.shape[0]
+            self.b_ += self.eta * 2.0 * error.mean()
+            loss = np.mean(error**2)
             self.losses_.append(loss)
         return self
     def net_input(self, X):

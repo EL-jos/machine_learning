@@ -13,6 +13,9 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import Perceptron, LogisticRegression
+from  sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import tree
 from chp3.LogisticRegressionGD import LogisticRegressionGD
 
 iris = datasets.load_iris()
@@ -55,9 +58,10 @@ plt.show()
 
 X_combined_std = np.vstack((X_train_std, X_test_std))
 y_combined = np.hstack((y_train, y_test))
-
+"""
 lr = LogisticRegression(C=100.0, solver='lbfgs', multi_class='ovr')
 lr.fit(X_train_std, y_train)
+print(lr.predict(X_test_std[:3, :]))
 
 plot_decision_regions(X_combined_std, y_combined, classifier=lr, test_idx=range(105, 150))
 plt.xlabel('Petal length [standardized]')
@@ -65,4 +69,17 @@ plt.ylabel('Petal width [standardized]')
 plt.legend(loc='upper left')
 plt.tight_layout()
 #plt.savefig('figures/03_06.png', dpi=300)
+"""
+"""
+svm = SVC(C=1., gamma='auto', kernel='linear', random_state=1)
+svm.fit(X_train_std, y_train)
+plot_decision_regions(X_combined_std, y_combined, classifier=svm, test_idx=range(105, 150))
+"""
+
+tree_model = DecisionTreeClassifier(criterion='gini', max_depth=4, random_state=1)
+tree_model.fit(X_train_std, y_train)
+#plot_decision_regions(X_combined_std, y_combined, classifier=tree_model, test_idx=range(105, 150))
+feature_names = ['Sepal length', 'Sepal width','Petal length', 'Petal width']
+tree.plot_tree(tree_model,feature_names=feature_names,filled=True)
+
 plt.show()
