@@ -13,7 +13,7 @@ class Perceptron:
         for _ in range(self.n_iter):
             errors = 0
             for xi, target in zip(X, y):
-                update = self.eta * (target - self.predict(xi))
+                update =  self.eta * (target - self.predict(xi))
                 self.w_ += update * xi
                 self.b_ += update
                 errors += int(update != 0.0)
@@ -22,4 +22,4 @@ class Perceptron:
     def net_input(self, X):
         return np.dot(X, self.w_) + self.b_
     def predict(self, X):
-        return np.where(self.net_input(X) >= 0.0, 1, -1)
+        return np.where(self.net_input(X) >= 0.0, 1 -1)
