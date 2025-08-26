@@ -14,7 +14,7 @@ print(df.dropna(subset=['C', 'D'])) """
 
 """ df = pd.DataFrame([
 ['green', 'M', 10.1, 'class2'],
-['green', 'L', 13.5, 'class1'],
+['red', 'L', 13.5, 'class1'],
 ['blue', 'XL', 15.3, 'class2']
 ])
 
@@ -56,5 +56,44 @@ sc.fit(X_train)
 X_train_std = sc.transform(X_train)
 X_test_std = sc.transform(X_test)
 
+from sklearn.linear_model import LogisticRegression
 
-#df_wine.head()
+
+import matplotlib.pyplot as plt
+
+fig = plt.figure()
+ax = plt.subplot(111)
+    
+colors = ['blue', 'green', 'red', 'cyan', 
+          'magenta', 'yellow', 'black', 
+          'pink', 'lightgreen', 'lightblue', 
+          'gray', 'indigo', 'orange']
+
+weights, params = [], []
+for c in np.arange(-4., 6.):
+    lr = LogisticRegression(penalty='l1', C=10.**c, solver='saga', max_iter=1000, random_state=0)
+    lr.fit(X_train_std, y_train)
+    weights.append(lr.coef_[1])
+    params.append(10**c)
+
+weights = np.array(weights)
+
+for column, color in zip(range(weights.shape[1]), colors):
+    plt.plot(params, weights[:, column],
+             label=df_wine.columns[column + 1],
+             color=color)
+plt.axhline(0, color='black', linestyle='--', linewidth=3)
+plt.xlim([10**(-5), 10**5])
+plt.ylabel('Weight coefficient')
+plt.xlabel('C (inverse regularization strength)')
+plt.xscale('log')
+plt.legend(loc='upper left')
+ax.legend(loc='upper center', 
+          bbox_to_anchor=(1.38, 1.03),
+          ncol=1, fancybox=True)
+
+#plt.savefig('figures/04_08.png', dpi=300, 
+#            bbox_inches='tight', pad_inches=0.2)
+
+plt.show()
+

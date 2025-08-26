@@ -13,10 +13,10 @@ class AdalineGD:
         for _ in range(self.n_iter):
             net_input = self.net_input(X)
             output = self.activation(net_input)
-            error = y - output
-            self.w_ += self.eta * 2.0 * X.T.dot(error) / X.shape[0]
-            self.b_ += self.eta * 2.0*  error.mean()
-            loss = (error**2).mean()
+            errors = y - output
+            self.w_ += self.eta * 2.0 * X.T.dot(errors) / X.shape[0]
+            self.b_ += self.eta * 2.0 * errors.mean()
+            loss = (errors**2).mean()
             self.losses_.append(loss)
         return self
     def net_input(self, X):
