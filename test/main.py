@@ -8,6 +8,7 @@ cols = [
     "capital_gain", "capital_loss", "hours_per_week", "native_country", "income"
 ]
 df = pd.read_csv(path, header=None)
+
 df.columns = cols
 
 X = df.iloc[:, :-1]
@@ -19,31 +20,53 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, stratif
 
 from sklearn.impute import SimpleImputer
 
-simpleImputer = SimpleImputer(missing_values=" ?", strategy="most_frequent")
+si = SimpleImputer(missing_values=' ?', strategy='most_frequent')
+X_train[:] = si.fit_transform(X_train)
+X_test[:] = si.transform(X_test)
 
-X_train_df = pd.DataFrame(X_train, columns=cols[:-1])
-X_test_df = pd.DataFrame(X_test, columns=cols[:-1])
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
-X_train_df[:] = simpleImputer.fit_transform(X_train_df)
-X_test_df[:] = simpleImputer.transform(X_test_df)
-
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+X_train = X_train.drop('education', axis=1)
+X_test = X_test.drop('education', axis=1)
 
 nominal_cols = ['workclass', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 'native_country']
 
+ohe = OneHotEncoder(drop=None, sparse_output=False, handle_unknown='ignore')
 
-for nominal_col in nominal_cols:
-    ohe = OneHotEncoder(drop=None)
+X_train_encoded = pd.DataFrame(
+    ohe.fit_transform(X_train[nominal_cols]),
+    columns=ohe.get_feature_names_out(nominal_cols),
+    index=X_train.index
+)
+X_test_encoded = pd.DataFrame(
+    ohe.transform(X_test[nominal_cols]),
+    columns=ohe.get_feature_names_out(nominal_cols),
+    index=X_test.index
+)
 
-    train_encoded = ohe.fit_transform(X_train_df[nominal_col].to_numpy().reshape(-1, 1)).toarray()
-    test_encoded = ohe.fit_transform(X_test_df[nominal_col].to_numpy().reshape(-1, 1)).toarray()
+X_train_nominal = pd.concat([X_train.drop(nominal_cols, axis=1), X_train_encoded], axis=1)
+X_test_nominal = pd.concat([X_test.drop(nominal_cols, axis=1), X_test_encoded], axis=1)
 
-    train_encoded_df = pd.DataFrame(train_encoded, columns=ohe.get_feature_names_out([nominal_col]))
-    test_encoded_df = pd.DataFrame(test_encoded, columns=ohe.get_feature_names_out([nominal_col]))
+le = LabelEncoder()
+y_train = le.fit_transform(y_train)
+y_test = le.transform(y_test)
 
-    X_train_encoded = pd.concat([X_train_df.drop(nominal_col, axis=1), train_encoded_df], axis=1)
-    X_test_encoded = pd.concat([X_test_df.drop(nominal_col, axis=1), test_encoded_df], axis=1)
+from sklearn.preprocessing import MinMaxScaler
 
-sc = StandardScaler()
-X_train_encoded_std = sc.fit_transform(X_train_encoded)
-X_test_encoded_std = sc.transform(X_test_encoded)
+minmax = MinMaxScaler()
+X_train_minmax = minmax.fit_transform(X_train_nominal)
+X_test_minmax = minmax.transform(X_test_nominal)
+
+from sklearn.decomposition import PCA
+
+# Réduction de dimension à 2D pour visualisation
+pca = PCA(n_components=2)
+X_train_pca = pca.fit_transform(X_train_minmax)
+X_test_pca = pca.transform(X_test_minmax)
+
+from sklearn.linear_model import LogisticRegression
+
+lr = LogisticRegression(penalty='l1', C=10., random_state=1, solver='saga', max_iter=5000)
+lr.fit(X_train_minmax, y_train)
+score = lr.score(X_test_minmax, y_test)
+print("Accuracy (test):", score)
